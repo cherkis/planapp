@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Plan - Daily Planner</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Calendar View -->
+        <div id="calendar-view" class="view active">
+            <header>
+                <h1>My Plan</h1>
+                <button id="today-btn" class="btn-primary">
+                    <span>📅</span> Today
+                </button>
+            </header>
+
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <button id="prev-month" class="btn-icon">
+                        <span>◀</span>
+                    </button>
+                    <h2 id="month-year"></h2>
+                    <button id="next-month" class="btn-icon">
+                        <span>▶</span>
+                    </button>
+                </div>
+
+                <div class="weekdays">
+                    <div>Su</div>
+                    <div>Mo</div>
+                    <div>Tu</div>
+                    <div>We</div>
+                    <div>Th</div>
+                    <div>Fr</div>
+                    <div>Sa</div>
+                </div>
+
+                <div id="calendar-grid" class="calendar-grid"></div>
+            </div>
+
+            <div class="bottom-nav">
+                <button id="next-nav-btn" class="nav-btn">
+                    <span class="nav-icon">➜</span>
+                    <span>Next</span>
+                </button>
+                <div class="nav-divider"></div>
+                <button id="eventually-nav-btn" class="nav-btn">
+                    <span class="nav-icon">⟳</span>
+                    <span>Eventually</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Day View -->
+        <div id="day-view" class="view">
+            <header>
+                <button id="back-to-calendar" class="btn-back">
+                    <span>◀</span> Calendar
+                </button>
+                <button id="day-today-btn" class="btn-primary">Today</button>
+            </header>
+
+            <div class="date-header" id="selected-date"></div>
+
+            <div class="tasks-container">
+                <div id="tasks-list"></div>
+                <button id="add-task-btn" class="btn-add">
+                    <span>➕</span> Add Task
+                </button>
+            </div>
+        </div>
+
+        <!-- Next View -->
+        <div id="next-view" class="view">
+            <header>
+                <button id="back-from-next" class="btn-back">
+                    <span>◀</span> Calendar
+                </button>
+            </header>
+
+            <div class="date-header editable">
+                <span class="label">Date:</span>
+                <input type="text" id="next-date-input" class="date-input" placeholder="">
+            </div>
+
+            <div class="tasks-container">
+                <div id="next-tasks-list"></div>
+                <button id="add-next-task-btn" class="btn-add">
+                    <span>➕</span> Add Task
+                </button>
+            </div>
+        </div>
+
+        <!-- Eventually View -->
+        <div id="eventually-view" class="view">
+            <header>
+                <button id="back-from-eventually" class="btn-back">
+                    <span>◀</span> Calendar
+                </button>
+            </header>
+
+            <div class="date-header editable">
+                <span class="label">Date:</span>
+                <input type="text" id="eventually-date-input" class="date-input" placeholder="">
+            </div>
+
+            <div class="tasks-container">
+                <div id="eventually-tasks-list"></div>
+                <button id="add-eventually-task-btn" class="btn-add">
+                    <span>➕</span> Add Task
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
