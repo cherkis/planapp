@@ -17,9 +17,12 @@
         <div id="calendar-view" class="view active">
             <header>
                 <h1>My Plan</h1>
-                <button id="today-btn" class="btn-primary">
-                    <span>📅</span> Today
-                </button>
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <button id="help-btn" class="btn-icon">?</button>
+                    <button id="today-btn" class="btn-primary">
+                        <span>📅</span> Today
+                    </button>
+                </div>
             </header>
 
             <div class="calendar-container">
@@ -50,6 +53,11 @@
                 <button id="next-nav-btn" class="nav-btn">
                     <span class="nav-icon">➜</span>
                     <span>Next</span>
+                </button>
+                <div class="nav-divider"></div>
+                <button id="recurring-nav-btn" class="nav-btn">
+                    <span class="nav-icon">🔄</span>
+                    <span>Recurring</span>
                 </button>
                 <div class="nav-divider"></div>
                 <button id="eventually-nav-btn" class="nav-btn">
@@ -88,7 +96,7 @@
 
             <div class="date-header editable">
                 <span class="label">Date:</span>
-                <input type="text" id="next-date-input" class="date-input" placeholder="">
+                <input type="text" id="next-date-input" class="date-input" placeholder="MM/DD/YYYY">
             </div>
 
             <div class="tasks-container">
@@ -109,13 +117,84 @@
 
             <div class="date-header editable">
                 <span class="label">Date:</span>
-                <input type="text" id="eventually-date-input" class="date-input" placeholder="">
+                <input type="text" id="eventually-date-input" class="date-input" placeholder="MM/DD/YYYY">
             </div>
 
             <div class="tasks-container">
                 <div id="eventually-tasks-list"></div>
                 <button id="add-eventually-task-btn" class="btn-add">
                     <span>➕</span> Add Task
+                </button>
+            </div>
+        </div>
+        <!-- Help View -->
+        <div id="help-view" class="view">
+            <header>
+                <button id="back-from-help" class="btn-back">
+                    <span>◀</span> Calendar
+                </button>
+            </header>
+            <div class="help-content">
+                <div class="help-section">
+                    <h3>Daily View</h3>
+                    <p>Tap a day on the calendar to plan tasks for that date. Tap the circle next to a task to update its status.</p>
+                </div>
+                <div class="help-section">
+                    <h3>Next</h3>
+                    <p>List your near-term tasks here &mdash; things you plan to tackle soon. Use the date field to note when you intend to start.</p>
+                </div>
+                <div class="help-section">
+                    <h3>Eventually</h3>
+                    <p>List your big long-term goals here &mdash; things you want to accomplish but don't have an immediate timeline for.</p>
+                </div>
+                <div class="help-section">
+                    <h3>Recurring Tasks</h3>
+                    <p>Set up tasks that automatically appear on scheduled days (every day, weekdays, or specific days of the week).</p>
+                </div>
+                <div class="help-section">
+                    <h3>Task Statuses</h3>
+                    <div class="help-status-row">
+                        <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                        <span>Not Started</span>
+                    </div>
+                    <div class="help-status-row">
+                        <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M 12 12 L 12 2 A 10 10 0 0 1 22 12 Z" fill="currentColor"/></svg>
+                        <span>Quarter Done</span>
+                    </div>
+                    <div class="help-status-row">
+                        <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M 12 12 L 12 2 A 10 10 0 0 1 12 22 Z" fill="currentColor"/></svg>
+                        <span>Half Done</span>
+                    </div>
+                    <div class="help-status-row">
+                        <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="10" fill="currentColor"/></svg>
+                        <span>Done</span>
+                    </div>
+                    <div class="help-status-row">
+                        <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><path d="M 8 12 L 16 12 M 13 9 L 16 12 L 13 15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span>Delegated</span>
+                    </div>
+                </div>
+                <div class="help-section">
+                    <h3>Reorder Tasks</h3>
+                    <p>Press and hold a task row to drag it to a new position.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recurring View -->
+        <div id="recurring-view" class="view">
+            <header>
+                <button id="back-from-recurring" class="btn-back">
+                    <span>◀</span> Calendar
+                </button>
+            </header>
+            <div class="recurring-header">
+                <h2>Recurring Tasks</h2>
+            </div>
+            <div class="tasks-container">
+                <div id="recurring-tasks-list"></div>
+                <button id="add-recurring-task-btn" class="btn-add">
+                    <span>➕</span> Add Recurring Task
                 </button>
             </div>
         </div>
