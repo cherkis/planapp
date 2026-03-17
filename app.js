@@ -702,6 +702,8 @@ function createRecurringTaskRow(task, index) {
 let dragState = null;
 
 function initDragAndDrop(container, viewType) {
+    if (container._dragInitialized) return;
+    container._dragInitialized = true;
     container.addEventListener('touchstart', (e) => handleDragStart(e, container, viewType), { passive: false });
     container.addEventListener('pointerdown', (e) => {
         if (e.pointerType === 'touch') return; // handled by touchstart
