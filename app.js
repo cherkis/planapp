@@ -11,9 +11,19 @@ const TaskStatus = {
     NOT_STARTED: 'notStarted',
     QUARTER_DONE: 'quarterDone',
     HALF_DONE: 'halfDone',
+    THREE_QUARTERS_DONE: 'threeQuartersDone',
     DONE: 'done',
     DELEGATED: 'delegated'
 };
+
+const TASK_STATUS_OPTIONS = [
+    { label: 'Done', status: TaskStatus.DONE },
+    { label: '3/4 Done', status: TaskStatus.THREE_QUARTERS_DONE },
+    { label: '1/2 Done', status: TaskStatus.HALF_DONE },
+    { label: '1/4 Done', status: TaskStatus.QUARTER_DONE },
+    { label: 'Undone', status: TaskStatus.NOT_STARTED },
+    { label: 'Delegate', status: TaskStatus.DELEGATED }
+];
 
 // Current state
 let currentDate = new Date();
@@ -25,6 +35,7 @@ let bulletMenuOpen = null;
 document.addEventListener('DOMContentLoaded', () => {
     initializeApp();
     setupEventListeners();
+    renderHelpStatuses();
     renderCalendar();
 });
 
@@ -310,6 +321,20 @@ function createBullet(status) {
             halfPath.setAttribute('fill', 'currentColor');
             svg.appendChild(halfPath);
             break;
+
+        case TaskStatus.THREE_QUARTERS_DONE:
+            const threeQuarterCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            threeQuarterCircle.setAttribute('cx', '12');
+            threeQuarterCircle.setAttribute('cy', '12');
+            threeQuarterCircle.setAttribute('r', '10');
+            threeQuarterCircle.setAttribute('class', 'bullet-three-quarter');
+            svg.appendChild(threeQuarterCircle);
+
+            const threeQuarterPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            threeQuarterPath.setAttribute('d', 'M 12 12 L 12 2 A 10 10 0 1 1 2 12 Z');
+            threeQuarterPath.setAttribute('fill', 'currentColor');
+            svg.appendChild(threeQuarterPath);
+            break;
             
         case TaskStatus.QUARTER_DONE:
             const quarterCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -352,15 +377,8 @@ function openBulletMenu(event, taskIndex, viewType) {
     
     const menu = document.createElement('div');
     menu.className = 'bullet-menu';
-    
-    const statuses = [
-        { label: 'Done', status: TaskStatus.DONE },
-        { label: '1/2 Done', status: TaskStatus.HALF_DONE },
-        { label: '1/4 Done', status: TaskStatus.QUARTER_DONE },
-        { label: 'Delegated', status: TaskStatus.DELEGATED }
-    ];
-    
-    statuses.forEach(({ label, status }) => {
+
+    TASK_STATUS_OPTIONS.forEach(({ label, status }) => {
         const btn = document.createElement('button');
         btn.textContent = label;
         btn.addEventListener('click', () => {
@@ -379,6 +397,29 @@ function openBulletMenu(event, taskIndex, viewType) {
     
     bulletMenuOpen = menu;
 }
+
+    function renderHelpStatuses() {
+        const container = document.getElementById('help-status-list');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        TASK_STATUS_OPTIONS.forEach(({ label, status }) => {
+            const row = document.createElement('div');
+            row.className = 'help-status-row';
+
+            const bullet = createBullet(status);
+            bullet.setAttribute('width', '20');
+            bullet.setAttribute('height', '20');
+
+            const text = document.createElement('span');
+            text.textContent = label;
+
+            row.appendChild(bullet);
+            row.appendChild(text);
+            container.appendChild(row);
+        });
+    }
 
 function closeBulletMenu() {
     if (bulletMenuOpen) {

@@ -353,6 +353,12 @@ header h1 {
     stroke-width: 2;
 }
 
+.bullet-three-quarter {
+    fill: none;
+    stroke: var(--text-primary);
+    stroke-width: 2;
+}
+
 .bullet-quarter {
     fill: none;
     stroke: var(--text-primary);
