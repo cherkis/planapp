@@ -30,6 +30,7 @@ let currentDate = new Date();
 let selectedDate = new Date();
 let currentView = 'calendar';
 let bulletMenuOpen = null;
+let confirmDialogOpen = null;
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
@@ -267,10 +268,16 @@ function createTaskRow(task, index, viewType) {
     input.placeholder = 'Enter task';
     input.addEventListener('input', (e) => updateTaskText(index, e.target.value, viewType));
     input.addEventListener('input', autoResize);
-    
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'task-delete-btn';
+    deleteBtn.textContent = '✕';
+    deleteBtn.addEventListener('click', () => confirmDeleteTask(index, viewType));
+
     row.appendChild(bullet);
     row.appendChild(input);
-    
+    row.appendChild(deleteBtn);
+
     // Auto-resize textarea
     setTimeout(() => autoResize.call(input), 0);
     
@@ -428,6 +435,129 @@ function closeBulletMenu() {
     }
 }
 
+// Confirmation dialog
+function openConfirmDialog({ title, body, note, confirmLabel = 'Delete', onConfirm }) {
+    closeConfirmDialog();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'confirm-overlay';
+
+    const dialog = document.createElement('div');
+    dialog.className = 'confirm-dialog';
+
+    const titleEl = document.createElement('div');
+    titleEl.className = 'confirm-title';
+    titleEl.textContent = title;
+    dialog.appendChild(titleEl);
+
+    const bodyEl = document.createElement('div');
+    bodyEl.className = 'confirm-body';
+    bodyEl.textContent = body;
+    dialog.appendChild(bodyEl);
+
+    if (note) {
+        const noteEl = document.createElement('div');
+        noteEl.className = 'confirm-note';
+        noteEl.textContent = note;
+        dialog.appendChild(noteEl);
+    }
+
+    const actions = document.createElement('div');
+    actions.className = 'confirm-actions';
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'confirm-btn confirm-cancel';
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.addEventListener('click', closeConfirmDialog);
+
+    const confirmBtn = document.createElement('button');
+    confirmBtn.className = 'confirm-btn confirm-delete';
+    confirmBtn.textContent = confirmLabel;
+    confirmBtn.addEventListener('click', () => {
+        closeConfirmDialog();
+        onConfirm();
+    });
+
+    actions.appendChild(cancelBtn);
+    actions.appendChild(confirmBtn);
+    dialog.appendChild(actions);
+    overlay.appendChild(dialog);
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeConfirmDialog();
+    });
+
+    const onKeyDown = (e) => {
+        if (e.key === 'Escape') closeConfirmDialog();
+    };
+    document.addEventListener('keydown', onKeyDown);
+
+    document.body.appendChild(overlay);
+    confirmDialogOpen = { overlay, onKeyDown };
+}
+
+function closeConfirmDialog() {
+    if (confirmDialogOpen) {
+        document.removeEventListener('keydown', confirmDialogOpen.onKeyDown);
+        confirmDialogOpen.overlay.remove();
+        confirmDialogOpen = null;
+    }
+}
+
+function confirmDeleteTask(index, viewType) {
+    const task = getTask(index, viewType);
+    if (!task) return;
+
+    openConfirmDialog({
+        title: 'Delete task?',
+        body: task.text.trim() || 'Untitled task',
+        note: task.recurringId ? 'It will still appear on other days.' : null,
+        onConfirm: () => deleteTask(index, viewType)
+    });
+}
+
+function getTask(index, viewType) {
+    switch(viewType) {
+        case 'day': return getDailyPlan(selectedDate).tasks[index];
+        case 'next': return getNextPlan().tasks[index];
+        case 'eventually': return getEventuallyPlan().tasks[index];
+        default: return null;
+    }
+}
+
+function deleteTask(index, viewType) {
+    switch(viewType) {
+        case 'day': {
+            const dayPlan = getDailyPlan(selectedDate);
+            const [removed] = dayPlan.tasks.splice(index, 1);
+            if (removed && removed.recurringId) {
+                const skipped = dayPlan.skippedRecurringIds || [];
+                if (!skipped.includes(removed.recurringId)) {
+                    skipped.push(removed.recurringId);
+                }
+                dayPlan.skippedRecurringIds = skipped;
+            }
+            saveDailyPlan(selectedDate, dayPlan);
+            renderDayView();
+            break;
+        }
+        case 'next': {
+            const nextPlan = getNextPlan();
+            nextPlan.tasks.splice(index, 1);
+            saveNextPlan(nextPlan);
+            renderNextView();
+            break;
+        }
+        case 'eventually': {
+            const eventuallyPlan = getEventuallyPlan();
+            eventuallyPlan.tasks.splice(index, 1);
+            saveEventuallyPlan(eventuallyPlan);
+            renderEventuallyView();
+            break;
+        }
+    }
+}
+
 function addTask(viewType) {
     const newTask = {
         text: '',
@@ -536,8 +666,9 @@ function saveEventuallyPlan(plan) {
 function hasPlan(date) {
     const plan = getDailyPlan(date);
     if (plan.tasks && plan.tasks.length > 0) return true;
+    const skipped = plan.skippedRecurringIds || [];
     const recurringTasks = getRecurringTasks();
-    return recurringTasks.some(rt => shouldRecurOnDate(rt, date));
+    return recurringTasks.some(rt => !skipped.includes(rt.id) && shouldRecurOnDate(rt, date));
 }
 
 // Utility functions
@@ -580,10 +711,12 @@ function ensureRecurringTasks(date) {
     if (recurringTasks.length === 0) return;
 
     const plan = getDailyPlan(date);
+    const skipped = plan.skippedRecurringIds || [];
     let changed = false;
 
     recurringTasks.forEach(rt => {
         if (!shouldRecurOnDate(rt, date)) return;
+        if (skipped.includes(rt.id)) return;
         const alreadyExists = plan.tasks.some(t => t.recurringId === rt.id);
         if (!alreadyExists) {
             plan.tasks.unshift({
@@ -622,6 +755,15 @@ function addNewRecurringTask() {
     });
     saveRecurringTasks(tasks);
     renderRecurringView();
+}
+
+function confirmDeleteRecurringTask(task) {
+    openConfirmDialog({
+        title: 'Delete recurring task?',
+        body: task.text.trim() || 'Untitled task',
+        note: 'It will stop appearing on future days.',
+        onConfirm: () => deleteRecurringTask(task.id)
+    });
 }
 
 function deleteRecurringTask(id) {
@@ -672,7 +814,7 @@ function createRecurringTaskRow(task, index) {
     const deleteBtn = document.createElement('button');
     deleteBtn.className = 'recurring-delete-btn';
     deleteBtn.textContent = '✕';
-    deleteBtn.addEventListener('click', () => deleteRecurringTask(task.id));
+    deleteBtn.addEventListener('click', () => confirmDeleteRecurringTask(task));
 
     topRow.appendChild(input);
     topRow.appendChild(deleteBtn);
@@ -755,8 +897,8 @@ function initDragAndDrop(container, viewType) {
 function handleDragStart(event, container, viewType) {
     const taskRow = event.target.closest('.task-row');
     if (!taskRow) return;
-    // Don't drag if user is interacting with the textarea or bullet
-    if (event.target.closest('.task-input') || event.target.closest('.task-bullet')) return;
+    // Don't drag if user is interacting with the textarea, bullet or delete button
+    if (event.target.closest('.task-input') || event.target.closest('.task-bullet') || event.target.closest('.task-delete-btn')) return;
 
     const isTouch = event.type === 'touchstart';
     const startPos = isTouch ? { x: event.touches[0].clientX, y: event.touches[0].clientY } : { x: event.clientX, y: event.clientY };
@@ -802,6 +944,8 @@ function startDragging(taskRow, container, viewType, startPos, isTouch) {
     // Create floating clone
     const clone = taskRow.cloneNode(true);
     clone.className = 'task-row-clone';
+    const cloneDeleteBtn = clone.querySelector('.task-delete-btn');
+    if (cloneDeleteBtn) cloneDeleteBtn.remove();
     clone.style.width = rect.width + 'px';
     clone.style.left = rect.left + 'px';
     clone.style.top = rect.top + 'px';

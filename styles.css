@@ -455,7 +455,8 @@ header h1 {
     padding: 0;
 }
 
-.recurring-delete-btn {
+.recurring-delete-btn,
+.task-delete-btn {
     background: none;
     border: none;
     color: var(--text-secondary);
@@ -465,9 +466,18 @@ header h1 {
     border-radius: 6px;
 }
 
-.recurring-delete-btn:hover {
+.recurring-delete-btn:hover,
+.task-delete-btn:hover {
     background-color: rgba(255, 59, 48, 0.1);
     color: #FF3B30;
+}
+
+.task-delete-btn {
+    flex-shrink: 0;
+    /* .task-row aligns to flex-start, so nudge down to sit level with the bullet */
+    margin-top: 2px;
+    padding: 6px 8px;
+    line-height: 1;
 }
 
 .recurring-schedule {
@@ -573,6 +583,75 @@ header h1 {
     border-radius: 2px;
     margin: -2px 20px;
     transition: opacity 0.15s;
+}
+
+/* Confirmation Dialog */
+.confirm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1100;
+}
+
+.confirm-dialog {
+    background-color: var(--card-background);
+    border-radius: 14px;
+    box-shadow: 0 4px 16px var(--shadow);
+    padding: 20px;
+    width: 100%;
+    max-width: 300px;
+    text-align: center;
+}
+
+.confirm-title {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.confirm-body {
+    font-size: 15px;
+    color: var(--text-primary);
+    word-break: break-word;
+}
+
+.confirm-note {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+}
+
+.confirm-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.confirm-btn {
+    flex: 1;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 16px;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.confirm-cancel {
+    background-color: var(--secondary-background);
+    color: var(--text-primary);
+}
+
+.confirm-delete {
+    background-color: #FF3B30;
+    color: #FFFFFF;
 }
 
 /* Responsive */
