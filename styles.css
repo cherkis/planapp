@@ -394,6 +394,10 @@ header h1 {
     line-height: 1.5;
 }
 
+.help-section p + p {
+    margin-top: 8px;
+}
+
 .help-status-row {
     display: flex;
     align-items: center;
