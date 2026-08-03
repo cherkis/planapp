@@ -398,6 +398,16 @@ header h1 {
     margin-top: 8px;
 }
 
+.help-section a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.help-section strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
 .help-status-row {
     display: flex;
     align-items: center;
