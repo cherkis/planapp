@@ -416,23 +416,6 @@ header h1 {
     font-size: 15px;
 }
 
-.help-footer {
-    margin-top: 32px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border-color);
-}
-
-.help-footer p,
-.help-footer a {
-    font-size: 14px;
-    color: var(--text-secondary);
-    line-height: 1.5;
-}
-
-.help-footer a {
-    text-decoration: none;
-}
-
 /* Recurring View */
 .recurring-header {
     padding: 16px 20px;
